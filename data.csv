@@ -1,0 +1,41 @@
+patient_id,patient_name,age,gender,diagnosis,visit_date,medication,dosage,insurance_plan,has_insurance,risk_level,care_priority,blood_pressure,heart_rate,cholesterol,diabetes,asthma,chronic_kidney_disease,obesity,smoking_status,anemia
+1001,Lakshmi Devi,78,Female,Cardiac Issue,2024-01-01,Metformin,5mg,Basic,False,Low,Normal,162/90,105,233,Yes,No,No,No,Smoker,No
+1002,Rajesh Kumar,53,Male,Hypertension,2024-01-08,Aspirin,5mg,,True,Medium,Normal,140/102,68,240,No,No,No,No,Non-Smoker,No
+1003,Anitha Rao,20,Female,Cardiac Issue,2024-01-15,Metformin,5mg,Basic,False,High,Normal,153/99,98,238,No,No,No,No,Smoker,No
+1004,Suresh Babu,28,Male,Cardiac Issue,2024-01-22,Salbutamol,10mg,,True,Medium,Urgent,148/101,107,253,No,No,No,No,Former Smoker,No
+1005,Meena Krishnan,53,Female,Infection,2024-01-29,Salbutamol,10mg,Basic,True,Low,Normal,122/85,68,184,No,No,No,Yes,Smoker,Yes
+1006,Kamala Shankar,76,Female,Asthma,2024-02-05,Metformin,5mg,,True,High,Normal,116/85,66,179,No,Yes,Yes,No,Non-Smoker,Yes
+1007,Mohan Das,66,Male,Infection,2024-02-12,Metformin,20mg,Basic,False,Medium,Normal,119/73,82,165,Yes,No,No,No,Non-Smoker,No
+1008,Arun Prakash,39,Male,Asthma,2024-02-19,Aspirin,10mg,Basic,True,Low,Urgent,120/76,82,170,No,Yes,No,Yes,Non-Smoker,Yes
+1009,Shanthi Nair,65,Female,Diabetes,2024-02-26,Aspirin,10mg,Premium,False,High,Urgent,125/77,69,180,Yes,No,No,No,Former Smoker,Yes
+1010,Radha Menon,70,Female,Infection,2024-03-04,Amlodipine,5mg,Premium,False,High,Normal,116/74,73,182,Yes,No,Yes,Yes,Smoker,No
+1011,Vinod Kumar,28,Male,Infection,2024-03-11,Aspirin,10mg,Basic,False,High,Urgent,126/84,70,203,No,No,No,No,Former Smoker,No
+1012,Sekar Raman,59,Male,Cardiac Issue,2024-03-18,Aspirin,20mg,,True,Medium,Normal,149/100,98,226,No,No,No,Yes,Smoker,Yes
+1013,Ramesh Iyer,50,Male,Infection,2024-03-25,Amlodipine,5mg,Premium,False,Medium,Urgent,123/82,75,175,Yes,No,No,No,Former Smoker,No
+1014,Priya Shah,22,Female,Diabetes,2024-04-01,Salbutamol,5mg,Premium,False,Low,Normal,119/73,77,197,No,No,No,No,Non-Smoker,No
+1015,Prakash Reddy,70,Male,Diabetes,2024-04-08,Amlodipine,10mg,Premium,True,Medium,Normal,110/83,83,201,Yes,Yes,Yes,Yes,Former Smoker,No
+1016,Savitha Pillai,65,Female,Asthma,2024-04-15,Amoxicillin,5mg,Gold,False,Medium,Normal,114/82,75,210,Yes,Yes,No,Yes,Former Smoker,No
+1017,Deepa Srinivasan,46,Female,Asthma,2024-04-22,Metformin,5mg,Basic,False,High,Normal,121/82,77,180,Yes,Yes,No,Yes,Smoker,Yes
+1018,Nandhini Gupta,21,Female,Infection,2024-04-29,Amlodipine,20mg,Basic,True,Low,Normal,125/75,75,175,No,No,No,No,Former Smoker,No
+1019,Indira Mohan,70,Female,Asthma,2024-05-06,Amlodipine,20mg,Gold,True,High,Urgent,111/74,81,176,Yes,Yes,No,No,Former Smoker,No
+1020,Kalpana Verma,57,Female,Infection,2024-05-13,Aspirin,10mg,Gold,True,High,Urgent,115/77,84,173,Yes,No,No,No,Smoker,No
+1021,Sunitha Rao,56,Female,Infection,2024-05-20,Aspirin,10mg,Premium,True,Medium,Urgent,124/78,76,195,No,No,No,Yes,Smoker,No
+1022,Divya Malhotra,30,Female,Asthma,2024-05-27,Aspirin,10mg,Basic,False,High,Normal,119/78,71,185,No,Yes,No,No,Smoker,No
+1023,Ashok Mehta,50,Male,Asthma,2024-06-03,Amlodipine,20mg,,False,Low,Urgent,113/72,75,161,Yes,Yes,No,No,Former Smoker,Yes
+1024,Harish Kulkarni,72,Male,Infection,2024-06-10,Amlodipine,10mg,Basic,True,Medium,Normal,123/72,84,197,No,No,No,No,Former Smoker,No
+1025,Geetha Nandakumar,70,Female,Diabetes,2024-06-17,Amoxicillin,10mg,Gold,False,High,Urgent,120/72,72,189,No,Yes,No,Yes,Former Smoker,No
+1026,Karthik Subramanian,53,Male,Asthma,2024-06-24,Metformin,10mg,Basic,True,Low,Normal,129/78,83,164,Yes,Yes,No,No,Former Smoker,Yes
+1027,Anjali Chatterjee,48,Female,Asthma,2024-07-01,Aspirin,10mg,Gold,True,High,Urgent,111/82,70,192,Yes,Yes,No,Yes,Smoker,Yes
+1028,Naresh Yadav,60,Male,Asthma,2024-07-08,Salbutamol,20mg,Premium,True,High,Normal,128/75,76,199,No,Yes,No,No,Smoker,No
+1029,Srinivas Rao,79,Male,Infection,2024-07-15,Amoxicillin,5mg,Gold,False,High,Urgent,130/75,76,177,Yes,No,Yes,Yes,Former Smoker,No
+1030,Neha Kapoor,27,Female,Asthma,2024-07-22,Amlodipine,20mg,,True,High,Urgent,128/71,83,201,No,Yes,No,No,Non-Smoker,No
+1031,Rahul Singhania,26,Male,Diabetes,2024-07-29,Salbutamol,20mg,Gold,False,High,Urgent,122/74,68,176,No,No,No,No,Former Smoker,No
+1032,Vikram Patel,53,Male,Infection,2024-08-05,Metformin,10mg,Basic,True,Medium,Urgent,130/85,65,199,Yes,No,No,Yes,Former Smoker,No
+1033,Santosh Naik,55,Male,Hypertension,2024-08-12,Amlodipine,5mg,,False,Low,Urgent,180/101,76,242,Yes,No,No,Yes,Non-Smoker,Yes
+1034,Rekha Joshi,46,Female,Hypertension,2024-08-19,Aspirin,5mg,Basic,True,High,Urgent,161/95,68,253,No,No,No,No,Former Smoker,Yes
+1035,Rajiv Menon,72,Male,Cardiac Issue,2024-08-26,Amoxicillin,20mg,Basic,True,Low,Normal,154/93,96,266,Yes,No,No,Yes,Non-Smoker,Yes
+1036,Pooja Agarwal,36,Female,Diabetes,2024-09-02,Metformin,20mg,Basic,False,Low,Urgent,121/73,69,181,No,No,No,Yes,Former Smoker,No
+1037,Anupama Das,34,Female,Infection,2024-09-09,Aspirin,5mg,Gold,False,Low,Normal,110/76,80,181,No,No,No,Yes,Former Smoker,Yes
+1038,Rohit Malhotra,18,Male,Asthma,2024-09-16,Amlodipine,10mg,Basic,True,Low,Normal,111/72,72,167,No,Yes,No,No,Smoker,No
+1039,Sunita Mishra,55,Female,Hypertension,2024-09-23,Amoxicillin,20mg,Premium,False,High,Normal,168/94,67,246,Yes,No,No,Yes,Smoker,Yes
+1040,Mahesh Gowda,70,Male,Hypertension,2024-09-30,Salbutamol,20mg,Gold,False,High,Urgent,171/109,83,259,Yes,No,Yes,Yes,Non-Smoker,No
