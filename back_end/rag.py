@@ -2,12 +2,16 @@ import os
 from pypdf import PdfReader
 from pathlib import Path
 
-
+# -------------------------------------------------
+# FILE PATH CONFIG
+# -------------------------------------------------
 BASE_DIR = Path(__file__).resolve().parent
 GUIDELINES_PDF = BASE_DIR.parent / "guidelines.pdf"
 POLICY_PDF = BASE_DIR.parent / "policy.pdf"
 
-
+# -------------------------------------------------
+# PDF TEXT EXTRACTION
+# -------------------------------------------------
 def _read_pdf_text(pdf_path: Path) -> str:
     """
     Read and extract text from a PDF file safely.
@@ -28,11 +32,13 @@ def _read_pdf_text(pdf_path: Path) -> str:
         print(f"[PDF READ ERROR] {pdf_path.name}: {e}")
         return ""
 
-
+# Cache PDF text (read once)
 GUIDELINES_TEXT = _read_pdf_text(GUIDELINES_PDF)
 POLICY_TEXT = _read_pdf_text(POLICY_PDF)
 
-
+# -------------------------------------------------
+# KEYWORD MAP (FOR SMART MATCHING)
+# -------------------------------------------------
 KEYWORD_MAP = {
     "diabetes": ["diabetes", "diabetic", "blood sugar", "glucose"],
     "asthma": ["asthma", "bronchial", "inhaler"],
@@ -43,7 +49,9 @@ KEYWORD_MAP = {
     "smoking": ["smoking", "smoker", "tobacco", "nicotine"]
 }
 
-
+# -------------------------------------------------
+# MAIN RAG FUNCTION
+# -------------------------------------------------
 def retrieve_evidence(patient: dict, question: str = "") -> dict:
     """
     Retrieve relevant clinical guideline and insurance policy evidence
@@ -55,7 +63,7 @@ def retrieve_evidence(patient: dict, question: str = "") -> dict:
 
     search_terms = set()
 
-    
+    # ---------------- PATIENT-BASED TERMS ----------------
     if patient.get("diabetes") == "Yes":
         search_terms.update(KEYWORD_MAP["diabetes"])
 
@@ -77,13 +85,14 @@ def retrieve_evidence(patient: dict, question: str = "") -> dict:
     if patient.get("smoking_status") == "Smoker":
         search_terms.update(KEYWORD_MAP["smoking"])
 
-    
+    # ---------------- QUESTION-BASED TERMS ----------------
+    if question:
         for group in KEYWORD_MAP.values():
             for term in group:
                 if term in question.lower():
                     search_terms.add(term)
 
-    
+    # ---------------- CLINICAL GUIDELINES SEARCH ----------------
     if GUIDELINES_TEXT:
         lines = GUIDELINES_TEXT.split("\n")
         seen = set()
@@ -99,7 +108,7 @@ def retrieve_evidence(patient: dict, question: str = "") -> dict:
             if len(clinical_evidence) >= 6:
                 break
 
-  
+    # ---------------- INSURANCE / POLICY SEARCH ----------------
     insurance_keywords = [
         "insurance", "policy", "coverage", "claim",
         "billing", "premium", "deductible"
@@ -123,7 +132,7 @@ def retrieve_evidence(patient: dict, question: str = "") -> dict:
                 if len(insurance_evidence) >= 4:
                     break
 
-    
+    # ---------------- FALLBACKS ----------------
     if not clinical_evidence:
         clinical_evidence.append(
             "Risk assessment based on standard hospital clinical guidelines and best practices."

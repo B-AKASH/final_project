@@ -1,10 +1,24 @@
 import os
 from groq import Groq
+from dotenv import load_dotenv
 
+# -------------------------------------------------
+# LOAD ENV VARIABLES
+# -------------------------------------------------
+load_dotenv()  # 🔴 REQUIRED
 
+# -------------------------------------------------
+# GROQ CLIENT SETUP
+# -------------------------------------------------
+API_KEY = os.getenv("GROQ_API_KEY")
 
-client = Groq(api_key="API_KEY")
+if not API_KEY:
+    raise RuntimeError("GROQ_API_KEY is not set")
 
+client = Groq(api_key=API_KEY)
+# -------------------------------------------------
+# INTELLIGENT QUERY PARSER
+# -------------------------------------------------
 def parse_inquiry(query: str) -> dict:
     """
     Uses LLM to translate natural language into structured SQL filters.
@@ -62,16 +76,16 @@ def parse_inquiry(query: str) -> dict:
         print(f"Parsing Error: {e}")
         return {"sql_conditions": [], "specific_name": None, "is_policy_query": False, "summary": "Error parsing query"}
 
-
-
-
+# -------------------------------------------------
+# MASTER EXPLANATION FUNCTION
+# -------------------------------------------------
 def explain_decision(patient: dict, reasons: list, evidence: list) -> str:
     """
     Generate a professional, empathetic clinical explanation
     using patient data, reasons, and PDF evidence.
     """
 
-    
+    # Safe fallbacks
     patient_name = patient.get("patient_name", "N/A")
     age = patient.get("age", "N/A")
     gender = patient.get("gender", "N/A")

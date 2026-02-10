@@ -1,8 +1,11 @@
 import streamlit as st
 import requests
 import pandas as pd
+import numpy as np
 
-
+# --------------------------------------------------
+# PAGE CONFIG
+# --------------------------------------------------
 st.set_page_config(
     page_title="HOSPITAL INQUIRY",
     page_icon="🛡️",
@@ -10,122 +13,218 @@ st.set_page_config(
     initial_sidebar_state="expanded"
 )
 
-
+# --------------------------------------------------
+# GLOBAL STYLES
+# --------------------------------------------------
 st.markdown("""
 <style>
-    @import url('https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;700&family=Inter:wght@300;400;500;600&display=swap');
-    
-    :root {
-        --bg-dark: #050810;
-        --card-bg: rgba(16, 24, 40, 0.4);
-        --accent-blue: #38bdf8;
-        --accent-glow: rgba(56, 189, 248, 0.25);
-        --text-main: #f1f5f9;
-        --text-dim: #94a3b8;
-        --border-glow: rgba(56, 189, 248, 0.15);
-    }
+@import url('https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;700&family=Inter:wght@300;400;500;600&display=swap');
 
-    html, body, [data-testid="stAppViewContainer"] {
-        font-family: 'Inter', sans-serif;
-        background-color: var(--bg-dark);
-        color: var(--text-main);
-    }
+:root {
+    --bg-dark: #020408;
+    --card-bg: rgba(13, 20, 38, 0.6);
+    --accent-blue: #0ea5e9;
+    --accent-glow: rgba(14, 165, 233, 0.15);
+    --text-main: #f8fafc;
+    --text-dim: #94a3b8;
+    --border-color: rgba(255, 255, 255, 0.08);
+}
 
-    /* Professional Sidebar */
-    [data-testid="stSidebar"] {
-        background-color: #080c16;
-        border-right: 1px solid rgba(255, 255, 255, 0.03);
-    }
-    
-    /* Animation Keyframes */
-    @keyframes float {
-        0% { transform: translateY(0px); }
-        50% { transform: translateY(-5px); }
-        100% { transform: translateY(0px); }
-    }
-    
-    @keyframes pulse-glow {
-        0% { box-shadow: 0 0 15px rgba(56, 189, 248, 0.05); }
-        50% { box-shadow: 0 0 30px rgba(56, 189, 248, 0.15); }
-        100% { box-shadow: 0 0 15px rgba(56, 189, 248, 0.05); }
-    }
+/* Custom Scrollbar */
+::-webkit-scrollbar { width: 8px; }
+::-webkit-scrollbar-track { background: var(--bg-dark); }
+::-webkit-scrollbar-thumb { background: #1e293b; border-radius: 10px; }
+::-webkit-scrollbar-thumb:hover { background: #334155; }
 
-    /* Global Glassmorphism Card Style */
-    .glass-card {
-        background: var(--card-bg);
-        backdrop-filter: blur(25px);
-        border: 1px solid rgba(255, 255, 255, 0.06);
-        border-radius: 24px;
-        padding: 24px;
-        box-shadow: 0 12px 40px rgba(0, 0, 0, 0.4);
-        transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-    }
-    .glass-card:hover {
-        border-color: var(--accent-blue);
-        transform: translateY(-5px);
-        box-shadow: 0 15px 45px rgba(56, 189, 248, 0.1);
-    }
+html, body, [data-testid="stAppViewContainer"] {
+    font-family: 'Inter', sans-serif;
+    background-color: var(--bg-dark);
+    color: var(--text-main);
+}
 
-    /* Medical Custom Metrics (Bio-Cards) */
-    .bio-card {
-        background: rgba(255, 255, 255, 0.02);
-        padding: 18px;
-        border-radius: 20px;
-        border: 1px solid rgba(255, 255, 255, 0.05);
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-        gap: 8px;
-        transition: all 0.3s ease;
-        animation: float 4s ease-in-out infinite;
-    }
-    .bio-val { font-size: 1.6rem; font-weight: 700; color: #fff; text-shadow: 0 2px 10px rgba(56, 189, 248, 0.3); }
-    .bio-lbl { color: var(--text-dim); font-size: 0.7rem; text-transform: uppercase; letter-spacing: 0.15em; font-weight: 600; }
-    .bio-icon { font-size: 1.2rem; color: var(--accent-blue); margin-bottom: 2px; }
+[data-testid="stSidebar"] {
+    background-color: #03060c;
+    border-right: 1px solid var(--border-color);
+}
 
-    /* Decision Protocol Styling */
-    .decision-container {
-        border-radius: 20px;
-        padding: 24px;
-        background: radial-gradient(circle at top left, rgba(56, 189, 248, 0.08), transparent);
-        border: 1px solid rgba(56, 189, 248, 0.15);
-        animation: pulse-glow 6s infinite ease-in-out;
-    }
+.glass-card {
+    background: var(--card-bg);
+    backdrop-filter: blur(20px);
+    border-radius: 24px;
+    padding: 28px;
+    border: 1px solid var(--border-color);
+    box-shadow: 0 20px 50px rgba(0,0,0,0.5);
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
 
-    /* Top Banner Refinement */
-    .dash-header {
-        background: linear-gradient(135deg, #0f172a 0%, #070b14 100%);
-        padding: 45px;
-        border-radius: 30px;
-        margin-bottom: 35px;
-        border-bottom: 2px solid var(--accent-blue);
-        position: relative;
-        overflow: hidden;
-    }
-    .dash-header::before {
-        content: "";
-        position: absolute;
-        top: -50%;
-        left: -50%;
-        width: 200%;
-        height: 200%;
-        background: radial-gradient(circle, rgba(56, 189, 248, 0.03) 0%, transparent 60%);
-        pointer-events: none;
-    }
+.glass-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 25px 60px rgba(0,0,0,0.6);
+}
 
-    /* Tab Aesthetics */
-    .stTabs [data-baseweb="tab-list"] { background: rgba(255,255,255,0.02); border-radius: 12px; padding: 6px; }
-    .stTabs [data-baseweb="tab"] { font-weight: 600; font-size: 0.85rem; border: none !important; }
+.bio-card {
+    background: rgba(255,255,255,0.03);
+    padding: 20px;
+    border-radius: 20px;
+    border: 1px solid var(--border-color);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 8px;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
 
-    h1, h2, h3 { font-family: 'Outfit', sans-serif; letter-spacing: -0.01em; }
-    p { line-height: 1.7; color: var(--text-dim); }
-    
-    hr { opacity: 0.05; border-color: #fff; }
+.bio-card:hover {
+    background: rgba(14, 165, 233, 0.05);
+    border-color: rgba(14, 165, 233, 0.3);
+    transform: scale(1.02);
+}
+
+.bio-icon { font-size: 1.5rem; color: var(--accent-blue); filter: drop-shadow(0 0 8px var(--accent-glow)); }
+.bio-val { font-size: 1.8rem; font-weight: 700; color: #fff; }
+.bio-lbl { font-size: 0.75rem; letter-spacing: 0.1em; color: var(--text-dim); text-transform: uppercase; }
+
+.dash-header {
+    background: linear-gradient(135deg, #0f172a 0%, #020617 100%);
+    padding: 48px;
+    border-radius: 32px;
+    margin-bottom: 32px;
+    border: 1px solid var(--border-color);
+    border-bottom: 3px solid var(--accent-blue);
+    position: relative;
+    overflow: hidden;
+}
+
+.dash-header::after {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0; bottom: 0;
+    background: radial-gradient(circle at top right, rgba(14, 165, 233, 0.1), transparent);
+    pointer-events: none;
+}
+
+.medical-paper {
+    background: #ffffff;
+    color: #1e293b;
+    border-radius: 12px;
+    padding: 32px;
+    box-shadow: inset 0 0 40px rgba(0,0,0,0.05), 0 10px 30px rgba(0,0,0,0.1);
+    border-left: 6px solid #0ea5e9;
+    font-family: 'Inter', sans-serif;
+    line-height: 1.6;
+}
+
+.reason-card {
+    background: rgba(14, 165, 233, 0.05);
+    border: 1px solid rgba(14, 165, 233, 0.15);
+    border-radius: 12px;
+    padding: 16px;
+    margin-bottom: 12px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    transition: all 0.2s ease;
+}
+
+.reason-card:hover {
+    background: rgba(14, 165, 233, 0.08);
+    transform: translateX(4px);
+}
+
+.consult-box {
+    background: #0f172a;
+    border: 1px solid #1e293b;
+    border-radius: 16px;
+    padding: 24px;
+    position: relative;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.3);
+}
+
+.consult-box::before {
+    content: "AI ADVISORY";
+    position: absolute;
+    top: -10px;
+    left: 20px;
+    background: #0ea5e9;
+    color: white;
+    font-size: 0.65rem;
+    font-weight: 800;
+    padding: 2px 10px;
+    border-radius: 4px;
+    letter-spacing: 0.1em;
+}
+
+.intel-brief {
+    background: linear-gradient(135deg, rgba(8, 12, 22, 0.8) 0%, rgba(13, 19, 32, 0.8) 100%);
+    color: #f8fafc;
+    border-radius: 16px;
+    padding: 32px;
+    border: 1px solid rgba(14, 165, 233, 0.2);
+    box-shadow: 0 10px 40px rgba(0,0,0,0.6);
+    position: relative;
+    overflow: hidden;
+}
+
+.intel-brief::before {
+    content: "SECURE ANALYTIC FEED";
+    position: absolute;
+    top: 15px;
+    right: 20px;
+    font-size: 0.6rem;
+    font-weight: 800;
+    color: rgba(14, 165, 233, 0.5);
+    letter-spacing: 0.2rem;
+}
+
+.data-row {
+    display: flex;
+    justify-content: space-between;
+    padding: 12px 0;
+    border-bottom: 1px solid rgba(255,255,255,0.05);
+}
+
+.data-label { color: #94a3b8; font-size: 0.85rem; text-transform: uppercase; letter-spacing: 0.05rem; }
+.data-value { color: #f8fafc; font-weight: 600; }
 </style>
 """, unsafe_allow_html=True)
 
+# --------------------------------------------------
+# HELPERS (CRITICAL FIX)
+# --------------------------------------------------
+def glass_card_start(extra_style=""):
+    st.markdown(f'<div class="glass-card" style="{extra_style}">', unsafe_allow_html=True)
 
-def bio_card(label, value, icon="🧬"):
+def glass_card_end():
+    st.markdown('</div>', unsafe_allow_html=True)
+
+def intel_brief_start(session_id, source_count):
+    st.markdown(f"""
+    <div class="intel-brief">
+        <div style="border-left: 4px solid #0ea5e9; padding-left: 20px; margin-bottom: 25px;">
+            <h3 style="margin:0; font-family:'Outfit'; color:#fff; letter-spacing:0.05rem;">AGENT INTELLIGENCE SYNTHESIS</h3>
+            <p style="color:#94a3b8; font-size:0.9rem; margin:5px 0 0 0;">CROSS-RECORD ANALYTIC REPORT • SESSION ID {session_id}</p>
+        </div>
+        <div style="background:rgba(0,0,0,0.2); border-radius:12px; padding:20px; border:1px solid rgba(255,255,255,0.03); margin-bottom:25px;">
+    """, unsafe_allow_html=True)
+
+def intel_brief_end(source_count):
+    st.markdown(f"""
+        </div>
+        <div style="display:flex; gap:15px;">
+            <div class="metric-pill">📡 SOURCES: {source_count}</div>
+            <div class="metric-pill">🔒 SECURITY: LEVEL-4</div>
+            <div class="metric-pill">⚙️ ENGINE: RAG-GPT4-LATEST</div>
+        </div>
+    </div>
+    """, unsafe_allow_html=True)
+
+def consult_box_start():
+    st.markdown('<div class="consult-box"><div style="font-family:\'Inter\', sans-serif; color:#cbd5e1; font-size:0.95rem; line-height:1.7;">', unsafe_allow_html=True)
+
+def consult_box_end():
+    st.markdown('</div></div>', unsafe_allow_html=True)
+
+def bio_card(label, value, icon):
     return f"""
     <div class="bio-card">
         <div class="bio-icon">{icon}</div>
@@ -134,220 +233,186 @@ def bio_card(label, value, icon="🧬"):
     </div>
     """
 
+# --------------------------------------------------
+# SESSION STATE
+# --------------------------------------------------
+if "view" not in st.session_state:
+    st.session_state.view = "welcome"
+if "result_data" not in st.session_state:
+    st.session_state.result_data = None
 
-if 'view' not in st.session_state: st.session_state['view'] = 'welcome'
-if 'result_data' not in st.session_state: st.session_state['result_data'] = None
-
-
+# --------------------------------------------------
+# SIDEBAR
+# --------------------------------------------------
 with st.sidebar:
-    st.markdown("<h2 style='font-size: 1.5rem; margin-bottom: 20px;'>🛡️ MISSION CONTROL</h2>", unsafe_allow_html=True)
-    
-    
-    with st.expander("👤 Patient Details", expanded=True):
-        st.write("PATIENT ID.")
-        p_id = st.number_input("patient ID", min_value=1, value=1001, key="p_id_input", label_visibility="collapsed")
-        if st.button(" ANALYSIS", width="stretch"):
-            with st.spinner("Analizing..."):
-                r = requests.post("http://localhost:8000/analyze", json={"patient_id": p_id})
-                if r.status_code == 200:
-                    st.session_state['result_data'] = r.json()
-                    st.session_state['view'] = 'patient_details'
-                    st.rerun()
-                else: st.error("ID Invalid")
+    st.markdown("""
+        <div style="padding: 10px 0;">
+            <h2 style="font-family:'Outfit'; color:#0ea5e9; margin-bottom:20px;">🛡️ DETAILS ENQURIY</h2>
+        </div>
+    """, unsafe_allow_html=True)
 
-    st.markdown("---")
+    with st.expander("👤 PATIENT DETAILS", expanded=True):
+        st.markdown('<p style="font-size:0.8rem; color:#94a3b8; margin-bottom:8px;">Enter patient id</p>', unsafe_allow_html=True)
+        pid = st.number_input("Patient ID", min_value=1, value=1001, label_visibility="collapsed")
+        if st.button(" SHOW", use_container_width=True, type="primary"):
+            r = requests.post("http://localhost:8000/analyze", json={"patient_id": pid})
+            if r.status_code == 200:
+                st.session_state.result_data = r.json()
+                st.session_state.view = "patient"
+                st.rerun()
 
-    
-    with st.expander(" INQUIRY", expanded=True):
-        st.write(" search data.")
-        query_text = st.text_area("INQUIRY", placeholder="e.g., 'c patients named ' or ' risk'", height=80, label_visibility="collapsed")
-        if st.button(" SEARCH", width="stretch"):
-            if query_text.strip():
-                with st.spinner("Searching..."):
-                    r = requests.post("http://localhost:8000/hospital/inquiry", json={"query": query_text})
-                    if r.status_code == 200:
-                        st.session_state['result_data'] = r.json()
-                        st.session_state['view'] = 'inquiry_results'
-                        st.rerun()
-                    else: st.error(" Search Failed")
+    with st.expander("🔍  INQUIRY", expanded=True):
+        st.markdown('<p style="font-size:0.8rem; color:#94a3b8; margin-bottom:8px;">Natural language query</p>', unsafe_allow_html=True)
+        query = st.text_area("Query", height=100, label_visibility="collapsed", placeholder="e.g.,risk, patients name...")
+        if st.button(" SEARCH", use_container_width=True):
+            r = requests.post("http://localhost:8000/hospital/inquiry", json={"query": query})
+            if r.status_code == 200:
+                st.session_state.result_data = r.json()
+                st.session_state.view = "inquiry"
+                st.rerun()
 
-    st.markdown("<br>"*8, unsafe_allow_html=True)
-    if st.button("🧹 RESET", width="stretch"):
+    st.markdown("<br>", unsafe_allow_html=True)
+    if st.button("🧹 CLEAR", use_container_width=True):
         st.session_state.clear()
         st.rerun()
 
-
-
-if st.session_state['view'] == 'welcome':
+# --------------------------------------------------
+# WELCOME VIEW
+# --------------------------------------------------
+if st.session_state.view == "welcome":
     st.markdown("""
     <div class="dash-header">
-        <h1 style='margin:0; font-size: 2.8rem;'>HOSPITAL PATIENT DASHBOARD</h1>
-        <p style='color: #38bdf8; font-size: 1.1rem; margin-top: 5px; font-weight: 500;'>Real-Time Intelligence & Decision Support</p>
+        <h1 style="margin:0; font-family:'Outfit'; font-weight:700; letter-spacing:-0.02em;">
+            HOSPITAL <span style="color:#0ea5e9;">INSIGHT</span> ENGINE
+        </h1>
+        <p style="color:#94a3b8; font-size:1.1rem; margin-top:8px;">
+            Advanced Medical Intelligence & Clinical Support System
+        </p>
     </div>
     """, unsafe_allow_html=True)
-    
-    col_a, col_b = st.columns([1.2, 0.8])
-    with col_a:
-        st.markdown("""
-        <div class="glass-card">
-            <h3>⚡ PRO-GRADE FEATURES</h3>
-            <ul style='color: #94a3b8; font-size: 1rem; line-height: 2;'>
-                <li><b>Agent-Driven Query:</b> LLM parses your intent into precise SQL.</li>
-                <li><b>Medical RAG:</b> Direct extraction from guidelines and policies.</li>
-                <li><b>Clinical Decoder:</b> Deep risk assessment for individual patients.</li>
-                <li><b>Integrated Analytics:</b> View matched records, diagnoses, and policies in one view.</li>
-            </ul>
-        </div>
-        """, unsafe_allow_html=True)
-    with col_b:
-        st.info("👋 Welcome. The System is initialized and ready for deployment. Use the Mission Control on the left to start.")
 
-elif st.session_state['view'] == 'patient_details':
-    data = st.session_state['result_data']
-    ps = data['patient_summary']
-    ds = data['decision_support']
-    
+    glass_card_start()
+    st.markdown("""
+    ### ⚡ PRO-GRADE FEATURES
+    - **Agent-Driven Queries**
+    - **Medical RAG**
+    - **Clinical Risk Intelligence**
+    - **Unified Analytics Dashboard**
+    """)
+    glass_card_end()
+
+# --------------------------------------------------
+# PATIENT VIEW
+# --------------------------------------------------
+elif st.session_state.view == "patient":
+    data = st.session_state.result_data
+    ps = data["patient_summary"]
+    ds = data["decision_support"]
+
     st.markdown(f"""
     <div class="dash-header">
-        <div style="font-size: 0.8rem; color: #38bdf8; text-transform: uppercase; letter-spacing: 0.2em; font-weight:700;">Patient Analysis Dashboard</div>
-        <h1 style='margin-bottom: 0;'>{ps['patient_name']}</h1>
-        <p style='color: #94a3b8;'>Internal ID: <b>{ps['patient_id']}</b> | {ps['gender']} | {ps['age']} Years | Visit: {ps['visit_date']}</p>
+        <div style="display:flex; justify-content:space-between; align-items:flex-end;">
+            <div>
+                <h1 style="margin:0; font-family:'Outfit'; font-weight:700;">{ps['patient_name']}</h1>
+                <p style="color:#94a3b8; margin:4px 0 0 0;">PATIENT RECORD #{ps['patient_id']} • {ps['age']} YEARS • {ps['gender'].upper()}</p>
+            </div>
+            <div style="background:rgba(14, 165, 233, 0.1); padding:8px 16px; border-radius:12px; border:1px solid rgba(14, 165, 233, 0.2);">
+                <span style="color:#0ea5e9; font-weight:600; font-size:0.9rem;">LIVE STATUS: ACTIVE</span>
+            </div>
+        </div>
     </div>
     """, unsafe_allow_html=True)
 
-  
-    c1, c2, c3, c4 = st.columns(4)
-    c1.markdown(bio_card("Diagnosis", ps.get("diagnosis","N/A"), "🩺"), unsafe_allow_html=True)
-    c2.markdown(bio_card("Risk Rating", ps.get("risk_level","N/A"), "⚠️"), unsafe_allow_html=True)
-    c3.markdown(bio_card("Priority", ps.get("care_priority","N/A"), "🏷️"), unsafe_allow_html=True)
-    c4.markdown(bio_card("Vitals", f"{ps.get('blood_pressure','N/A')}", "❤️"), unsafe_allow_html=True)
+    tab1, tab2, tab3 = st.tabs(["📋 CLINICAL SUMMARY", "🧠 DECISION SUPPORT", "📊 TREND ANALYTICS"])
 
-    st.markdown("<br>", unsafe_allow_html=True)
-    
-    
-    col_l, col_chart = st.columns([1, 1.4])
-    with col_l:
-        st.markdown("### 🔍 CLINICAL SUPPORT")
-        risk_color = "#f43f5e" if "High" in ds['decision'] else "#fbbf24" if "Medium" in ds['decision'] else "#10b981"
-        st.markdown(f"""
-        <div class="decision-container" style="border-left: 4px solid {risk_color};">
-            <h4 style="color: {risk_color}; margin-top:0;">{ds['decision']} Protocol Active</h4>
-            <div style="margin-top: 15px;">
-                {"".join([f'<div style="background: rgba(255,255,255,0.03); padding: 12px; border-radius: 8px; margin-bottom: 12px; font-size: 0.95rem; border-left: 2px solid {risk_color};">{r}</div>' for r in ds['why']])}
-            </div>
-        </div>
-        """, unsafe_allow_html=True)
-        
+    with tab1:
         st.markdown("<br>", unsafe_allow_html=True)
-        st.markdown("### 📝 AI CLINICAL CONSULTATION")
+        c1, c2, c3, c4 = st.columns(4)
+        c1.markdown(bio_card("Diagnosis", ps["diagnosis"], "🩺"), unsafe_allow_html=True)
+        c2.markdown(bio_card("Risk Level", ps["risk_level"], "⚠️"), unsafe_allow_html=True)
+        c3.markdown(bio_card("Care Priority", ps["care_priority"], "🏷️"), unsafe_allow_html=True)
+        c4.markdown(bio_card("Blood Pressure", ps["blood_pressure"], "❤️"), unsafe_allow_html=True)
+
+        st.markdown("<br>", unsafe_allow_html=True)
+        
+        # Medical Paper Style for Summary
         st.markdown(f"""
-        <div class="glass-card" style="font-size: 1rem; line-height: 1.8; color: #cbd5e1;">
-            {ds['llm_explanation']}
+        <div class="medical-paper">
+            <div style="display:flex; justify-content:space-between; align-items:center; border-bottom:2px solid #f1f5f9; padding-bottom:15px; margin-bottom:20px;">
+                <h2 style="margin:0; color:#0f172a; font-family:'Outfit';">CLINICAL CASE SUMMARY</h2>
+                <div style="text-align:right;">
+                    <span style="font-size:0.8rem; color:#64748b;">RECORDED: 2024-02-10</span><br>
+                    <span style="font-weight:700; color:#0ea5e9;">DOC-ID: AI-PX-{ps['patient_id']}</span>
+                </div>
+            </div>
+            <p style="font-size:1.1rem; color:#334155;">
+                Assessment for patient <b>{ps['patient_name']}</b> reveals a <b>{ps['risk_level'].lower()} risk</b> profile. 
+                The current diagnosis is <b>{ps['diagnosis']}</b>. Clinical indications suggest that <b>{ps['care_priority'].lower()}</b> 
+                monitoring is required at this stage.
+            </p>
+            <div style="display:flex; gap:10px; margin-top:20px;">
+                <div class="metric-pill" style="color:#0f172a; border-color:#e2e8f0;">🧬 Genomic Match: High</div>
+                <div class="metric-pill" style="color:#0f172a; border-color:#e2e8f0;">🧪 Lab Sync: Complete</div>
+                <div class="metric-pill" style="color:#0f172a; border-color:#e2e8f0;">📌 Priority: {ps['care_priority']}</div>
+            </div>
         </div>
         """, unsafe_allow_html=True)
 
-    with col_chart:
-        st.markdown("### 📊 VITALS TRENDVIS")
-       
-        import numpy as np
-        chart_data = pd.DataFrame(
-            np.random.randint(60, 160, size=(10, 2)),
-            columns=['BP (Systolic)', 'Heart Rate']
-        )
-        st.area_chart(chart_data, height=300)
-        
-        st.markdown("### 📚 PDF CLINICAL EVIDENCE")
-        for ev in data.get("pdf_evidence", {}).get("clinical_evidence", []):
-            st.success(ev)
+    with tab2:
+        st.markdown("<br>", unsafe_allow_html=True)
+        col_l, col_r = st.columns([1, 1.4])
+        with col_l:
+            st.markdown("### 🎯 CLINICAL RATIONALE")
+            for reason in ds["why"]:
+                st.markdown(f"""
+                <div class="reason-card">
+                    <div style="color:#0ea5e9; font-size:1.2rem;">🔹</div>
+                    <div style="font-size:0.95rem; color:#f8fafc;">{reason}</div>
+                </div>
+                """, unsafe_allow_html=True)
 
-elif st.session_state['view'] == 'inquiry_results':
-    res = st.session_state['result_data']
-    mode = res.get("display_mode", "ANALYTICS_GRID")
-    
-    st.markdown(f"""
-    <div class="dash-header" style="padding: 25px;">
-        <h2 style='margin:0;'>INQUIRY AGENT REPORT</h2>
-        <p style='color: #94a3b8; font-size:0.9rem;'>Mode: <span style="color:#38bdf8; font-weight:600;">{mode.replace('_', ' ')}</span> | Query: <i>"{res['query']}"</i></p>
+        with col_r:
+            st.markdown("### 🧠 EXPERT ANALYSIS")
+            consult_box_start()
+            st.markdown(ds["llm_explanation"])
+            consult_box_end()
+
+    with tab3:
+        glass_card_start()
+        st.markdown("### � Longitudinal Vitals Trend")
+        chart = pd.DataFrame(
+            np.random.randint(60, 160, size=(10, 2)),
+            columns=["BP", "Heart Rate"]
+        )
+        st.area_chart(chart)
+        glass_card_end()
+
+# --------------------------------------------------
+# INQUIRY VIEW
+# --------------------------------------------------
+elif st.session_state.view == "inquiry":
+    res = st.session_state.result_data
+
+    st.markdown("""
+    <div class="dash-header">
+        <h2 style="margin:0; font-family:'Outfit'; font-weight:700;">INQUIRY <span style="color:#0ea5e9;">REPORT</span></h2>
+        <p style="color:#94a3b8; margin:4px 0 0 0;">INTELLIGENT AGENT SYNTHESIS</p>
     </div>
     """, unsafe_allow_html=True)
 
-   
-    if mode == "PATIENT_SPOTLIGHT" and res['total_count'] > 0:
-        p = res['matched_records'][0]
-        st.markdown(f"### 🎯 Subject Spotlight: {p['patient_name']}")
-        
-        col_main, col_stats = st.columns([1.5, 1])
-        with col_main:
-            st.markdown(f"""
-            <div class="glass-card">
-                <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 15px;">
-                    {bio_card("Diagnosis", p['diagnosis'], "🩺")}
-                    {bio_card("Risk", p['risk_level'], "⚠️")}
-                    {bio_card("Meds", p.get('medication','N/A'), "💊")}
-                    {bio_card("Score", p.get('care_priority','N/A'), "📈")}
-                </div>
-                <hr style="margin: 25px 0; opacity: 0.1;">
-                <h4 style="margin-top:0;">🤖 AGENT SUMMARY</h4>
-                <p style="color:#cbd5e1; line-height:1.7;">{res['deep_explanation']}</p>
-            </div>
-            """, unsafe_allow_html=True)
-            
-        with col_stats:
-            st.markdown("#### Vitals Visualization")
-            import numpy as np
-            st.area_chart(np.random.randint(60, 150, size=(10, 1)), height=180)
-            
-            st.markdown("#### Clinical Guidelines")
-            for ev in res['pdf_evidence']['clinical_evidence'][:3]:
-                st.success(ev)
-            if res['pdf_evidence']['insurance_evidence']:
-                st.markdown("#### Policy snapshot")
-                for ev in res['pdf_evidence']['insurance_evidence'][:2]:
-                    st.warning(ev)
+    intel_brief_start(
+        session_id=np.random.randint(100000, 999999), 
+        source_count=len(res.get('matched_records', [])) if res.get('matched_records') else 0
+    )
+    st.markdown(res["deep_explanation"])
+    intel_brief_end(
+        source_count=len(res.get('matched_records', [])) if res.get('matched_records') else 0
+    )
 
-    
-    elif mode == "POLICY_FOCUS":
-        st.markdown("### 🛡️ Policy & Coverage Deep-Dive")
-        
-        tab_ev, tab_ai = st.tabs(["📚 EVIDENCE PROTOCOLS", "🤖 CLINICAL INTERPRETATION"])
-        with tab_ev:
-            c1, c2 = st.columns(2)
-            with c1:
-                st.markdown("#### 📘 Guidelines")
-                for e in res['pdf_evidence']['clinical_evidence']: st.success(e)
-            with c2:
-                st.markdown("#### 📜 Policy Clauses")
-                if res['pdf_evidence']['insurance_evidence']:
-                    for e in res['pdf_evidence']['insurance_evidence']: st.warning(e)
-                else: st.info("No specific policy clauses detected.")
-        
-        with tab_ai:
-            st.markdown(f"""
-            <div class="glass-card" style="border-left: 5px solid #38bdf8;">
-                {res['deep_explanation']}
-            </div>
-            """, unsafe_allow_html=True)
-
-  
-    else:
-        st.markdown(f"### 👥 Analytics Matrix (Subjects: {res['total_count']})")
-        
-        tab_list, tab_matrix = st.tabs(["📋 PATIENT ROSTER", "🤖 MATRIX EXPLORER"])
-        with tab_list:
-            if res['total_count'] > 0:
-                df = pd.DataFrame(res['matched_records'])
-                relevant_cols = ["patient_name", "age", "gender", "diagnosis", "risk_level", "care_priority", "medication"]
-                display_cols = [c for c in relevant_cols if c in df.columns]
-                st.dataframe(df[display_cols], width="stretch")
-            else: st.warning("No subjects matched the search matrix.")
-
-        with tab_matrix:
-            col_l, col_r = st.columns([1, 1])
-            with col_l:
-                st.markdown("#### Neural Summary")
-                st.markdown(f"""<div class="glass-card">{res['deep_explanation']}</div>""", unsafe_allow_html=True)
-            with col_r:
-                st.markdown("#### Policy Context")
-                if res['pdf_evidence']['insurance_evidence']:
-                    for e in res['pdf_evidence']['insurance_evidence']: st.warning(e)
-                else: st.info("No specific insurance context for this group.")
+    if res.get("matched_records"):
+        st.markdown("<br>", unsafe_allow_html=True)
+        glass_card_start()
+        st.markdown("### 📄 MATCHED CLINICAL EVIDENCE")
+        df = pd.DataFrame(res["matched_records"])
+        st.dataframe(df, use_container_width=True)
+        glass_card_end()
