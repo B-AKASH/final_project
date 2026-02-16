@@ -79,7 +79,7 @@ def startup_event():
 # REQUEST MODELS
 # =================================================
 class PatientQuery(BaseModel):
-    patient_id: str   # STRING (P001)
+    patient_id: int  
 
 class InquiryQuery(BaseModel):
     query: str
